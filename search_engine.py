@@ -1,11 +1,17 @@
+# multi_lookup will return only urls where the keywords in the query are present
+# in the same order as in the query. It's an exact match only.
+
 def multi_lookup(index, query):
   if len(query) == 0: # empty seach query retuns empyt list
     return []
 
-  # currentPos is a list of the urls where you can find the first keyword of the query so you can compare the positions of only those urls in the following keywords
+  # currentPos is a list of the urls where you can find the first keyword of
+  # the query so you can compare the positions of only those urls in the
+  # following keywords
   currentPos = lookup(index, query[0]) 
     
-  # check if the next keywords can be found in the same urls of the previous one and if the position is immediatly after
+  # check if the next keywords can be found in the same urls of the previous
+  # one and if the position is immediatly after
   for keyword in query[1:]:
     nextPos = []
     nextUrlPos = lookup(index, keyword)
@@ -21,7 +27,13 @@ def multi_lookup(index, query):
     result.append(url[0])
   return result
 
-def crawl_web(seed): # returns index and graph of inlinks
+
+
+# crawl_web will have a list of links to crawl, a list of crawled links, a
+# hash graph indicating all the pages a url links to and hash index. It will return
+# just the index and the graph
+
+def crawl_web(seed): 
     tocrawl = [seed]
     crawled = []
     graph = {}  # <url>, [list of pages it links to]
@@ -83,6 +95,7 @@ def lookup(index, keyword):
     else:
         return None
 
+# to test the code without actualy crawl the web
 cache = {
    'http://www.udacity.com/cs101x/final/multi.html': """<html>
 <body>
@@ -122,18 +135,3 @@ def get_page(url):
         return None
 
 index, graph = crawl_web('http://www.udacity.com/cs101x/final/multi.html')
-
-print multi_lookup(index, ['Python'])
-#>>> ['http://www.udacity.com/cs101x/final/b.html', 'http://www.udacity.com/cs101x/final/a.html']
-
-print multi_lookup(index, ['Monty', 'Python'])
-#>>> ['http://www.udacity.com/cs101x/final/a.html']
-
-print multi_lookup(index, ['Python', 'programming', 'language'])
-#>>> ['http://www.udacity.com/cs101x/final/b.html']
-
-print multi_lookup(index, ['Thomas', 'Jefferson'])
-#>>> ['http://www.udacity.com/cs101x/final/b.html', 'http://www.udacity.com/cs101x/final/a.html']
-
-print multi_lookup(index, ['most', 'powerful', 'weapon'])
-#>>> ['http://www.udacity.com/cs101x/final/a.html']
